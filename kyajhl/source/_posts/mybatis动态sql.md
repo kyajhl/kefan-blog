@@ -1,7 +1,7 @@
 ---
 title: mybatis动态sql
 tags: mybatis
-categories: mybatis动态sql学习
+categories: 学习笔记
 abbrlink: 5787
 date: 2023-08-07 00:57:15
 ---

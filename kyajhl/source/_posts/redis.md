@@ -75,3 +75,70 @@ date: 2023-09-03 10:39
 
 # List类型
 
+## 1、lpush、rpush和lrange命令
+
+1. `lpush key element [element ...]`：给 *key* 设置一系列值，并且是从左插入，和链表类似
+2. `rpush key element [element ...]`：给 *key* 设置一系列值，并且是从右插入，和链表类似
+3. `lrange key start stop`：*list* 类型独有的遍历方式，*start* 和 *stop* 取下标，*stop* 为 -1 时表示遍历**全部**
+
+## 2、lpop和rpop命令
+
+1. `lpop key [count]`：从左开始弹出 *key* 对应 *count* 个值，返回的是弹出的值
+2. `rpop key [count]`：从右开始弹出 *key* 对应 *count* 个值，返回的是弹出的值
+
+## 3、lindex和llen命令
+
+1. `lindex key index`：获取 *index* 对应的值
+2. `llen key`：获取列表中元素的个数
+
+## 4、lrem和ltrim命令
+
+1. `lrem key count element`：删除 *count* 个值等于 *element* 的元素
+2. `ltrim key start stop`：截取指定范围内的值后再赋值给 *key* 
+
+## 5、rpoplpush命令
+
+1. `rpoplpush source destination`：对 *surce* 执行 `rpop` 操作后，把 **弹出的元素** 再 `lpush` 到 *destination*
+
+## 6、lset和linsert命令
+
+1. `lset key index element`：设置对应 *index* 位置的元素值为 *element*
+2. `linsert key before|after pivot element`：在对应 *pivot* 值的位置前|后，插入 *element* 值
+
+# Hash类型
+
+## 1、hset、hget、hmset、hmget、hgetall和hdel命令
+
+1. `hset key field value [field value ...]`：设置 *key* 对应的键值对，可以设置多个
+2. `hget key field`：获取 *key* 对应的键
+3. `hmset key field value [field value ...]`：和 `hset` 用法差不多
+4. `hmget key field [field ...]`：可以获取 *key* 多个键
+5. `hgetall key`：可以获取 *key* 对应的多个键值对
+6. `hdel key field [field ...]`：删除 *key* 多个键
+
+## 2、hlen命令
+
+1. `hlen key`：获取 *key* 全部键的个数
+
+## 3、hexists 命令
+
+1. `hexists key field`：判断 *key* 对应的键是否存在，若存在则返回 1，不存在返回 0
+
+## 4、hkeys和hvals命令
+
+1. `hkeys key`：获取 *key* 所有的键
+2. `hvals key`：获取 *key* 多有的值
+
+## 5、hincrby和hincrbyfloat命令
+
+1. `hincrby key field increment`：给 *key* 对应的键值加上 *increment* ，但是键对应的值只能为数字，否则会报错
+2. `hincrbyfloat key field increment`：给 *key* 对应的键值加上 *increment* ，*increment* 可以为浮点数
+
+## 6、hsetnx命令
+
+1. `hsetnx key field value`：给 *key* 设置键值，但是这个键必须不存在，否则会报错
+
+# Set类型
+
+
+

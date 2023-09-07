@@ -140,5 +140,86 @@ date: 2023-09-03 10:39
 
 # Set类型
 
+## 基本命令
 
+### 1、sadd命令
+
+1. `sadd key member [member ...]`：往 *key* 里面添加成员，可以添加多个，但不能重复
+
+### 2、smembers命令
+
+1. `smembers key`：获取 *key* 全部的成员
+
+### 3、sismember命令
+
+1. `sismember key member`：查看 *key* 是否有成员 *member* ，若没有则返回 0，有则返回 1
+
+### 4、srem命令
+
+1. `srem key member [member ...]`：删除 *key* 里面的成员，可以删除多个
+
+### 5、scard命令
+
+1. `scard key`：获取 *key* 里面的成员个数
+
+### 6、srandmember命令
+
+1. `srandmember key [count]`：随机获取 *key* 里面的 *count* 个成员，成员不删除
+
+### 7、spop命令
+
+1. `spop key [count]`：随机弹出 *key* 里面 *count* 个值，成员会删除
+
+### 8、smove命令
+
+1. `smove source destination member`：从 `source` 中移动成员到 `destination` 中
+
+## 集合运算
+
+### 1、差集运算(sdiff)
+
+1. `sdiff key [key ...]`：获取两个 *key* 之间的差集，如 A-B，获取 A 中有的，B 中没有的
+
+### 2、并集运算(sunion)
+
+1. `sunion key [key ...]`：获取两个 *key* 之间的并集
+
+### 3、交集运算(sinter和sintercard)
+
+1. `sinter key [key ...]`：获取两个 *key* 之间的交集
+2. `sintercard numkeys key [key ...] [LIMIT limit]`：获取 *numkeys* 个 *key* 的交集元素个数，后面的 *limit* 表示显示几个
+
+# ZSet类型
+
+## 1、zadd命令
+
+1. `zadd key [NX|XX] [GT|LT] [CH] [INCR] score member [score member ...]`：
+
+## 2、zrange命令
+
+1. `zrange key start stop [byscore|bylex] [rev] [LIMIT offset count] [WITHSCORES]`：
+
+## 3、zrevrange命令
+
+1. `zrevrange key start stop [WITHSCORES]`：
+
+## 4、zrangebyscore命令
+
+1. `zrangebyscore key min max [WITHSCORES] [LIMIT offset count]`：
+
+## 5、zscore命令
+
+1. `zscore key number`：
+
+## 6、zcard命令
+
+1. `zcard key`：
+
+## 7、zrem命令
+
+1. `zrem key member [member ...]`：
+
+## 8、zincrby命令
+
+1. `zincrby key increment member`：
 

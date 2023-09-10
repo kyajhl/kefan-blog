@@ -12,22 +12,22 @@ date: 2023-09-03 10:39
 
 # 常用命令
 
-1. `keys *`：查看当前库所有的key
-2. `exists [key...]`：判断某个key是否存在，返回的数字为存在的key数量
-3. `type key`：查看key是什么类型
-4. `del [key...]`：删除指定的key数据，返回的数字为删除的key数量（原子性，若key很大，则在高并发情况下会产生阻塞队列）
+1. `keys *`：查看当前库所有的 *key* 
+2. `exists [key...]`：判断某个 *key* 是否存在，返回的数字为存在的 *key* 数量
+3. `type key`：查看 *key* 是什么类型
+4. `del [key...]`：删除指定的 *key* 数据，返回的数字为删除的 *key* 数量（原子性，若key很大，则在高并发情况下会产生阻塞队列）
 5. `unlink [key...]`：非阻塞删除，会在异步中操作（非阻塞，异步操作，不会产生阻塞队列）
 6. `ttl key`：查看还有多少秒过期，-1表示永不过期，-2表示已过期
-7. `expire key`：为给定的key设置过期时间
-8. `move key dbindex[0-15]`：将当前数据库的key移动到给定的数据库db当中，dbindex直接输入数字即可
-9. `select dbindex`：切换数据库[0-15]，默认为0
-10. `dbsize`：查看当前数据库key的数量
+7. `expire key`：为给定的 *key* 设置过期时间
+8. `move key dbindex[0-15]`：将当前数据库的 *key* 移动到给定的数据库 *db* 当中，*dbindex* 直接输入数字即可
+9. `select dbindex`：切换数据库[0-15]，默认为 0
+10. `dbsize`：查看当前数据库 *key* 的数量
 11. `flushdb`：清空当前库（很危险，尽量不要使用）
 12. `flushall`：通杀全部库（更危险，最好不要使用）
 
 备注：
 
-> 命令不区分大小写，而key区分大小写
+> 命令不区分大小写，而 *key* 区分大小写
 >
 > 永远的帮助命令，help @类型，如help @String，help @List，help @Hash
 
@@ -110,9 +110,9 @@ date: 2023-09-03 10:39
 ## 1、hset、hget、hmset、hmget、hgetall和hdel命令
 
 1. `hset key field value [field value ...]`：设置 *key* 对应的键值对，可以设置多个
-2. `hget key field`：获取 *key* 对应的键
+2. `hget key field`：获取 *key* 对应的键的值
 3. `hmset key field value [field value ...]`：和 `hset` 用法差不多
-4. `hmget key field [field ...]`：可以获取 *key* 多个键
+4. `hmget key field [field ...]`：可以获取 *key* 多个键的值
 5. `hgetall key`：可以获取 *key* 对应的多个键值对
 6. `hdel key field [field ...]`：删除 *key* 多个键
 
@@ -193,33 +193,99 @@ date: 2023-09-03 10:39
 
 ## 1、zadd命令
 
-1. `zadd key [NX|XX] [GT|LT] [CH] [INCR] score member [score member ...]`：
+1. `zadd key [NX|XX] [GT|LT] [CH] [INCR] score member [score member ...]`：往 *key* 里面添加成员和分数
 
 ## 2、zrange命令
 
-1. `zrange key start stop [byscore|bylex] [rev] [LIMIT offset count] [WITHSCORES]`：
+1. `zrange key start stop [byscore|bylex] [rev] [LIMIT offset count] [WITHSCORES]`：遍历 *key* ，*withscores* 表示可以带着分数
 
 ## 3、zrevrange命令
 
-1. `zrevrange key start stop [WITHSCORES]`：
+1. `zrevrange key start stop [WITHSCORES]`：反向遍历 *key* ，其他的和 `zrange` 一样
 
 ## 4、zrangebyscore命令
 
-1. `zrangebyscore key min max [WITHSCORES] [LIMIT offset count]`：
+1. `zrangebyscore key min max [WITHSCORES] [LIMIT offset count]`：遍历 *key* ，从规定的最小值到最大值，即 `>=,<=` ，可以用 *offset* 指定返回的数量，如果 *min* 和 *max* 的左边带有`(`，如 `(min` 或者 `(max` ，表示 `>` 或者 `<`
 
 ## 5、zscore命令
 
-1. `zscore key number`：
+1. `zscore key member`：获取 *key* 对应成员的分数
 
 ## 6、zcard命令
 
-1. `zcard key`：
+1. `zcard key`：获取 *key* 的成员个数
 
 ## 7、zrem命令
 
-1. `zrem key member [member ...]`：
+1. `zrem key member [member ...]`：删除 *key* 的成员，可以删除多个
 
 ## 8、zincrby命令
 
-1. `zincrby key increment member`：
+1. `zincrby key increment member`：给 *key* 对应的成员分数增加 *increment*
+
+## 9、zcount命令
+
+1. `zcount key min max`：获得 *key* 在 *min* 到 *max* 范围内的成员个数
+
+## 10、zmpop命令
+
+1. `zmpop numkeys key [key ...] MIN|MAX [COUNT count]`：从 *numkeys* 个 *key* 中弹出最小(MIN)或最大(MAX)分数的成员，弹出 *count* 个
+
+## 11、zrank命令
+
+1. `zrank key member [WITHSCORES]`：正序获取 *key* 对应成员的下标值
+
+## 12、zrevrank命令
+
+1. `zrevrank key member [WITHSCORES]`：逆序获取 *key* 对应成员的下标值
+
+# Bitmap类型
+
+***\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*底层是 String\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\****
+
+## 1、setbit命令
+
+1. `setbit key offset value`：设置 *key* 的偏移量的值为多少，*offset* 从 0 开始，***value* 只能为 0 或 1**
+
+## 2、getbit命令
+
+1. `getbit key offset`：获得 *key* 偏移量 *offset* 的值
+
+## 3、strlen命令
+
+1. `strlen key`：获得 *key* 占据几个字节，不是获得字符串的长度，超过 8 位后自己按照 8 位一组一byte再扩容
+
+## 4、bitcount命令
+
+1. `bitcount key [start end [BYTE|BIT]]`：获取  *key* 里面从 *start* 位到 *end* 位含有 1 的位数，默认是 *BYTE* 单位，最好是用 *BIT* 作为单位
+
+## 5、bitop命令
+
+1. `BITOP AND|OR|XOR|NOT destkey key [key ...]`：让多个 *key* 可以进行 ***位运算*** (与  或  异或  非)，结果给 *destkey*
+
+# HyperLogLog类型
+
+***\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*基数统计\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\****
+
+## 1、pfadd命令
+
+1. `pfadd key [element [element ...]]`：往 *key* 里面插入 *element* 元素
+
+## 2、pfcount命令
+
+1. `pfcount key [key ...]`：去掉重复的元素后，统计剩下的元素个数，多个 *key* ，会统计总的去掉重复元素之后的个数
+
+## 3、pfmerge命令
+
+1. `pfmerge destkey [sourcekey [sourcekey ...]]`：合并多个 *sourcekey* 到 *destkey* 中，并去掉重复元素
+
+# GEO类型
+
+
+
+
+
+
+
+
 

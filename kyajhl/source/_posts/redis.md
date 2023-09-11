@@ -265,7 +265,7 @@ date: 2023-09-03 10:39
 
 # HyperLogLog类型
 
-***\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*基数统计\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\****
+***\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*基数统计，底层是String\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\****
 
 ## 1、pfadd命令
 
@@ -281,7 +281,55 @@ date: 2023-09-03 10:39
 
 # GEO类型
 
+***\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*底层是ZSet\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\****
 
+***\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*中文乱码，在redis-cli后面加上--raw\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\****
+
+## 1、geoadd命令
+
+1. `geoadd key [NX|XX] [CH] longitude latitude member [longitude latitude member ...]`：*longitude* 经度，*latitude* 纬度，*member* 位置名称 
+
+## 2、geopos命令
+
+1. `geopos key [member [member ...]]`：返回经纬度
+
+## 3、geohash命令
+
+1. `geohash key [member [member ...]]`：返回经纬度坐标的geohash表示
+
+## 4、geodist命令
+
+1. `geodist key member1 member2 [M|KM|FT|MI]`：两个位置之间的距离，后面跟单位 *KM* 千米，*M* 米，*FT* 英尺，*MI* 英里
+
+## 5、georadius命令
+
+1. `georadius key longitude latitude radius M|KM|FT|MI [WITHCOORD] [WITHDIST] [WITHHASH] [COUNT count [ANY]] [ASC|DESC] [STORE key|STOREDIST key]`：以给定的经纬度为中心，返回键包含的位置元素当中，与中心的距离不超过给定最大距离(***radius***)的所有位置元素，***withdist***：返回位置元素的同时，将位置元素与中心之间的距离也一并返回，***withcoord***：将位置元素的经度与纬度一并返回，***withhash***：以52位有符号整数的形式，返回位置元素经过原始***geohash***编码的有序集合分值，***count***：限定返回的记录数
+
+## 6、georadiusbymember命令
+
+1. `georadiusbymember key member radius M|KM|FT|MI [WITHCOORD] [WITHDIST] [WITHHASH] [COUNT count [ANY]] [ASC|DESC] [STORE key|STOREDIST key]`：根据位置名称查找，和 ***georadius*** 的用法差不多
+
+# Stream类型
+
+## 队列相关指令
+
+### 1、xadd命令
+
+1. `xadd key [NOMKSTREAM] [MAXLEN|MINID [=|~] threshold [LIMIT count]] *|id field value [field value ...]`：
+
+### 2、xtrim命令
+
+### 3、xdel命令
+
+### 4、xlen命令
+
+### 5、xrange命令
+
+### 6、xrevrange命令
+
+### 7、xread命令
+
+## 消费组相关指令
 
 
 

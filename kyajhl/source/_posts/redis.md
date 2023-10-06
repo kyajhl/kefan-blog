@@ -315,25 +315,262 @@ date: 2023-09-03 10:39
 
 ### 1、xadd命令
 
-1. `xadd key [NOMKSTREAM] [MAXLEN|MINID [=|~] threshold [LIMIT count]] *|id field value [field value ...]`：
+1. `xadd key [NOMKSTREAM] [MAXLEN|MINID [=|~] threshold [LIMIT count]] *|id field value [field value ...]`：添加消息到队列末尾，* 表示自动生成 ***MessageID***，若不加 *，则要自己手动加 ***ID***，后面顺序跟着一堆业务 ***field***，***value***
 
 ### 2、xtrim命令
 
+1. `xtrim key MAXLEN|MINID [=|~] threshold [LIMIT count]`：对 ***Stream*** 的长度进行截取，***maxlen*** 允许的最大长度，***minid*** 允许的最小 ***id***
+
 ### 3、xdel命令
+
+1. `xdel key id [id ...]`：删除 ***key*** 对应的 ***id***  
 
 ### 4、xlen命令
 
+1. `xlen key`：获取 ***key*** 里面成员的数量
+
 ### 5、xrange命令
+
+1. `xrange key start end [COUNT count]`：***start*** 表示开始值，`-`代表最小值，***end*** 表示结束值，`+` 代表最大值，***count*** 代表最多可以获取多少个值
 
 ### 6、xrevrange命令
 
+1. `xrevrange key end start [COUNT count]`：***end*** 取 `+`，***start*** 取 `-`
+
 ### 7、xread命令
+
+1. `xread [COUNT count] [BLOCK milliseconds] STREAMS key [key ...] id [id ...]`：***count*** 最多读取多少条消息，***block*** 是否已阻塞的方式读取消息，默认不阻塞，如果 `milliseconds` 设置为 0，表示永远阻塞，***$*** 表示从尾，***0*** 表示从头
 
 ## 消费组相关指令
 
+### 1、xgroup create指令
+
+1. `xgroup create key group id|$ [MKSTREAM] [ENTRIESREAD entries-read]`：用于创建消费者组
+
+### 2、xreadgroup命令
+
+1. `GROUP group consumer [COUNT count] [BLOCK milliseconds] [NOACK] STREAMS key [key ...] id [id ...]`：`>` 表示从第一条尚未被消费的消息开始读取，消费组 *group* 内的消费者 *consumer* 从 *key* 消息队列中读取所有消息
+
+### 3、xpending命令
+
+1. `xpending key group [[IDLE min-idle-time] start end count [consumer]]`：查询每个消费组内所有消费者(已读取，但尚未确认)的消息，查看某个消费者具体读了哪些数据
+
+### 4、xack命令
+
+1. `xack key group id [id ...]`：向消息队列确认消息处理已完成
+
+### 5、xinfo stream命令
+
+1. `xinfo stream key [FULL [COUNT count]]`：用于打印 Stream\Consumer\Group的详细信息
+
+# redis客户端
+
+## 1、Jedis
+
+### 使用方法
+
+1. 在springboot中引入依赖
+
+   ```xml
+   <!--   使用 jedis 作为 redis客户端    -->
+   <dependency>
+       <groupId>redis.clients</groupId>
+       <artifactId>jedis</artifactId>
+       <version>3.7.0</version>
+   </dependency>
+   ```
+
+2. 测试jedis
+
+   ```java
+   @SpringBootTest
+   public class RedisTestApplicationTests {
+   
+       private Jedis jedis;
+   
+       @BeforeEach
+       public void setUp() {
+           // 建立连接
+           jedis = new Jedis("192.168.65.128", 6379);
+           // 设置密码
+           jedis.auth("111111");
+           // 选择库
+           jedis.select(0);
+       }
+   
+       @Test
+       public void testJedis() {
+           Set<String> keys = jedis.keys("*");
+           keys.forEach(System.out::println);
+   
+       }
+   
+       @AfterEach
+       public void setDown() {
+           // 关闭连接
+           if (jedis != null) {
+               jedis.close();
+           }
+       }
+   }
+   ```
 
 
+### jedis连接池
 
+Jedis本身是线程不安全的，并且频繁的创建和销毁连接会有性能损耗，因此推荐使用Jedis连接池代替Jedis直连方式
 
+### 连接池配置
 
+```java
+public class JedisConnectFactory {
+    private static final JedisPool jedisPool;
+
+    static {
+        // 配置连接池
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        // 最大连接数
+        jedisPoolConfig.setMaxTotal(8);
+        // 最大空闲连接数
+        jedisPoolConfig.setMaxIdle(8);
+        // 最小空闲连接数
+        jedisPoolConfig.setMinIdle(0);
+        // 等待时长
+        jedisPoolConfig.setMaxWait(Duration.ofMillis(1000));
+        // 配置连接池对象
+        jedisPool = new JedisPool(jedisPoolConfig,
+                "192.168.65.128", 6379, 1000, "111111");
+    }
+
+    public static Jedis getJedis() {
+        return jedisPool.getResource();
+    }
+}
+```
+
+在测试方法处，直接调用即可
+
+```java
+@BeforeEach
+public void setUp() {
+    // 建立连接
+    // jedis = new Jedis("192.168.65.128", 6379);
+    // 连接处创建 Jedis
+    jedis = JedisConnectFactory.getJedis();
+    // 设置密码
+    jedis.auth("111111");
+    // 选择库
+    jedis.select(0);
+}
+```
+
+## 2、SpringDataRedis
+
+### 使用方法
+
+1. 引入依赖
+
+   ```xml
+   <!-- 引入 redis -->
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-data-redis</artifactId>
+   </dependency>
+   <!--   连接池依赖(commons-pool)    -->
+   <dependency>
+       <groupId>org.apache.commons</groupId>
+       <artifactId>commons-pool2</artifactId>
+   </dependency>
+   ```
+
+2. 写入配置
+
+   ```yaml
+   spring:
+     redis:
+       host: 192.168.65.128
+       port: 6379
+       password: 111111
+       lettuce:
+         pool:
+           max-active: 8
+           max-idle: 8
+           min-idle: 0
+           max-wait: 100ms
+   ```
+
+3. 测试方法
+
+   ```java
+   @SpringBootTest
+   public class SpringDataRedisTests {
+       @Autowired
+       private RedisTemplate<String, Object> redisTemplate;
+   
+       @Test
+       public void testString() {
+           redisTemplate.opsForValue().set("name", "zhangsan");
+           Object name = redisTemplate.opsForValue().get("name");
+           System.out.println(name);
+       }
+   }
+   ```
+
+### 配置redis
+
+对redis配置之后，存入对象就不会以字节的形式表示出来了，实现了序列化和反序列化的重新配置
+
+```java
+@Configuration
+public class RedisConfig {
+
+    @Resource
+    private RedisConnectionFactory redisConnectionFactory;
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate() {
+        // 创建 redisTemplate 对象
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        // 设置连接工厂
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        // 创建 JSON 序列化工具
+        GenericJackson2JsonRedisSerializer jsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+        // 设置 key 的序列化
+        redisTemplate.setKeySerializer(RedisSerializer.string());
+        redisTemplate.setHashKeySerializer(RedisSerializer.string());
+        // 设置 value 的序列化
+        redisTemplate.setValueSerializer(jsonRedisSerializer);
+        redisTemplate.setHashValueSerializer(jsonRedisSerializer);
+        // 返回
+        return redisTemplate;
+    }
+}
+```
+
+### 使用 StringRedisTemplate
+
+StringRedisTemplate只能使用<String, String>的泛型，但是可以手动序列化和反序列化，更为简单
+
+```java
+@SpringBootTest
+public class SpringDataRedisTests {
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+    
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    public void testStringRedisTemplate() throws JsonProcessingException {
+        User user = new User("zhangsan", 18);
+        String userJson = objectMapper.writeValueAsString(user);
+        stringRedisTemplate.opsForValue().set("user:1", userJson);
+        String s = stringRedisTemplate.opsForValue().get("user:1");
+        if (!Objects.isNull(s)) {
+            User user1 = objectMapper.readValue(s, User.class);
+            System.out.println(user1);
+        }
+    }
+}
+```
 

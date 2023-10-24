@@ -315,7 +315,7 @@ date: 2023-09-03 10:39
 
 ### 1、xadd命令
 
-1. `xadd key [NOMKSTREAM] [MAXLEN|MINID [=|~] threshold [LIMIT count]] *|id field value [field value ...]`：添加消息到队列末尾，* 表示自动生成 ***MessageID***，若不加 *，则要自己手动加 ***ID***，后面顺序跟着一堆业务 ***field***，***value***
+1. `xadd key [NOMKSTREAM] [MAXLEN|MINID [=|~] threshold [LIMIT count]] *|id field value [field value ...]`：添加消息到队列末尾，* 表示自动生成 ***MessageID***，若不加 \*，则要自己手动加 ***ID***，格式为***“时间戳-递增数字”***后面顺序跟着一堆业务 ***field***，***value***，***NOMKSTREAM*** 表示如果队列不存在，是否自动创建队列，默认自动创建
 
 ### 2、xtrim命令
 
